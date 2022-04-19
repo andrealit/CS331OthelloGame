@@ -1,0 +1,12 @@
+Implement MinimaxPlayer::get_move()
+
+Calculate the best move by following the psuedocode
+
+function Minimax-Decision(state) returns an action
+
+Be careful on how you break ties
+
+
+For the first function, return the MIN of the MAX_VALUES
+
+If the bot is going second, it should always win or tie

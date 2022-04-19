@@ -36,12 +36,18 @@ public:
 	 */
     void get_move(OthelloBoard* b, int& col, int& row);
 
+	/**
+	 * @param b The board object for the current state of the board
+	 */
+	int utility(OthelloBoard* b);
+
     /**
      * @return A copy of the MinimaxPlayer object
      * This is a virtual copy constructor
      */
     MinimaxPlayer* clone();
 
+	
 private:
 
 };
