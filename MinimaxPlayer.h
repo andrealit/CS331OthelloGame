@@ -39,7 +39,22 @@ public:
 	/**
 	 * @param b The board object for the current state of the board
 	 */
-	int utility(OthelloBoard* b);
+	int utility(OthelloBoard b);
+
+	/**
+	 * @param b The board object for the current state of the board
+	 */
+	std::vector<OthelloBoard*> next_moves(OthelloBoard b, char symbol);
+
+	/**
+	 * @param b The board object for the current state of the board
+	 */
+	int max_value(OthelloBoard b);
+
+	/**
+	 * @param b The board object for the current state of the board
+	 */
+	int min_value(OthelloBoard b);
 
     /**
      * @return A copy of the MinimaxPlayer object

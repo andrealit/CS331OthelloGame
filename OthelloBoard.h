@@ -104,6 +104,31 @@ public:
      */
     char get_p2_symbol() { return p2_symbol; }
 
+    /**
+     * @brief Getter for column
+     */
+    int get_col() { return col; }
+
+    /**
+     * @brief Getter for row
+     */
+    int get_row() { return row; }
+
+    /**
+     * @brief Set the col object
+     * 
+     * @param c Column number
+     */
+    void set_col(int c) { col = c; }
+
+    /**
+     * @brief Set the row object
+     * 
+     * @param r Row number
+     */
+    void set_row(int r) { row = r; } 
+
+
 private:
 
     /** The symbol for Player 1's pieces */
@@ -111,6 +136,10 @@ private:
 
     /** The symbol for Player 2's pieces */
     char p2_symbol;
+
+    /* Row and Columns */
+    int row;
+    int col;
 
     /**
      * @param col The column of the starting point
