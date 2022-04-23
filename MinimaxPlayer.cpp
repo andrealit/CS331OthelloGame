@@ -11,7 +11,6 @@
 #include "MinimaxPlayer.h"
 
 using std::vector;
-using namespace std;
 
 MinimaxPlayer::MinimaxPlayer(char symb) :
 		Player(symb) {
@@ -36,12 +35,12 @@ int MinimaxPlayer::utility(OthelloBoard b) {
 	return utility;
 }
 
-vector<OthelloBoard*> MinimaxPlayer::next_moves(OthelloBoard b, char symbol) {
-	vector<OthelloBoard*> action_state;
+std::vector<OthelloBoard*> MinimaxPlayer::next_moves(OthelloBoard b, char symbol) {
+	std::vector<OthelloBoard*> action_state;
 	for (int i = 0; i < b.get_num_cols(); i++) {
 		for (int j = 0; j < b.get_num_rows(); j++) {
-			if (b.is_legal_move(i, j, symbol)) {
-				// temporarily move pieces into the next "action" state
+			if (b.is_legal_move(i, j, symbol) && b.is_cell_empty(i,j)) {
+				// move pieces into the next "action" state
 				OthelloBoard * explore = new OthelloBoard(b);
 				explore->play_move(i, j, symbol);
 				explore->set_col(i);
@@ -59,9 +58,9 @@ int MinimaxPlayer::max_value(OthelloBoard b) {
 	}
 	int v = INT_MIN;
 	char s = b.get_p1_symbol();
-	vector<OthelloBoard*> nextstates = next_moves(b, s);
+	std::vector<OthelloBoard*> nextstates = next_moves(b, s);
 	for (int i = 0; i < nextstates.size(); i++) {
-		v = max(v, min_value(*nextstates[i]));
+		v = std::max(v, min_value(*nextstates[i]));
 	}
 	return v;
 }
@@ -72,18 +71,17 @@ int MinimaxPlayer::min_value(OthelloBoard b) {
 	}
 	int v = INT_MAX;
 	char s = b.get_p1_symbol();
-	vector<OthelloBoard*> nextstates = next_moves(b, s);
+	std::vector<OthelloBoard*> nextstates = next_moves(b, s);
 	for (int i = 0; i < nextstates.size(); i++) {
-		v = min(v, max_value(*nextstates[i]));
+		v = std::min(v, max_value(*nextstates[i]));
 	}
 	return v;
 }
 
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
-    // Given the state of a game, calculate the best move by searching forward
-	// all the way to the terminal states.
-	int best_row, best_column = 0;
-	int best_min = 9;
+    // Given the state of a game, calculate the best move by searching forward all the way to the terminal states.
+	int best_row = -1, best_column = -1;
+	int best_min = INT_MAX;
 	int val;
 	std:vector<OthelloBoard*> possible_moves = next_moves(*b, get_symbol());
 	for (int i = 0; i < possible_moves.size(); i++) {
