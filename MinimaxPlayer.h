@@ -33,17 +33,18 @@ class Node {
 			this->move = m;
 			this->score = s;
 		}
+	private:
 };
 
 class State {
 	public:
 		Move* move;
 		OthelloBoard* board;
-
 		State(OthelloBoard* b, Move* m) {
 			this->board = b;
 			this->move = m;
 		}
+	private:
 };
 
 /**
