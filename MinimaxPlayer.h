@@ -78,7 +78,7 @@ public:
 	/**
 	 * @param b The board object for the current state of the board
 	 */
-	vector<State*> next_moves(OthelloBoard* b, char symbol);
+	vector<State*> successor(OthelloBoard* b, char symbol);
 
 	/**
 	 * @param symbol 

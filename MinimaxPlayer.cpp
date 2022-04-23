@@ -33,7 +33,7 @@ int MinimaxPlayer::utility(OthelloBoard* b) {
 	return b->count_score(symbol);
 }
 
-vector<State*> MinimaxPlayer::next_moves(OthelloBoard* b, char symbol) {
+vector<State*> MinimaxPlayer::successor(OthelloBoard* b, char symbol) {
 	vector<State*> action_state;
 	for (int i = 0; i < b->get_num_cols(); i++) {
 		for (int j = 0; j < b->get_num_rows(); j++) {
@@ -55,7 +55,7 @@ char MinimaxPlayer::opponent(char symbol) {
 }
 
 Node* MinimaxPlayer::minimax_decision(OthelloBoard* b, char symbol, bool max) {
-	vector<State*> nextmoves = next_moves(b, symbol);
+	vector<State*> nextmoves = successor(b, symbol);
 	char op = opponent(symbol);
 
 	if (nextmoves.empty()) {
