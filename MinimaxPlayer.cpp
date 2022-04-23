@@ -29,71 +29,83 @@ MinimaxPlayer::~MinimaxPlayer() {
  * Expand all the possible states
  */
 
-int MinimaxPlayer::utility(OthelloBoard b) {
-	// calculate the AI's score (P2) against the human (P1) 
-	int utility = b.count_score(b.get_p1_symbol()) - b.count_score(b.get_p2_symbol());
-	return utility;
+int MinimaxPlayer::utility(OthelloBoard* b) {
+	return b->count_score(symbol);
 }
 
-std::vector<OthelloBoard*> MinimaxPlayer::next_moves(OthelloBoard b, char symbol) {
-	std::vector<OthelloBoard*> action_state;
-	for (int i = 0; i < b.get_num_cols(); i++) {
-		for (int j = 0; j < b.get_num_rows(); j++) {
-			if (b.is_legal_move(i, j, symbol) && b.is_cell_empty(i,j)) {
-				// move pieces into the next "action" state
-				OthelloBoard * explore = new OthelloBoard(b);
-				explore->play_move(i, j, symbol);
-				explore->set_col(i);
-				explore->set_row(j);
-				action_state.push_back(explore);
+vector<State*> MinimaxPlayer::next_moves(OthelloBoard* b, char symbol) {
+	vector<State*> action_state;
+	for (int i = 0; i < b->get_num_cols(); i++) {
+		for (int j = 0; j < b->get_num_rows(); j++) {
+			if (b->is_legal_move(i, j, symbol)) {
+				// temporarily move pieces into the next "action" state
+				Move* move = new Move(i, j);
+				OthelloBoard* explore = new OthelloBoard(*b);
+				explore->play_move(move->col, move->row, symbol);
+				action_state.push_back(new State(explore, move));
 			}
 		}
 	}
 	return action_state;
 }
 
-int MinimaxPlayer::max_value(OthelloBoard b) {
-	if (!b.has_legal_moves_remaining(b.get_p2_symbol()) && b.has_legal_moves_remaining(b.get_p1_symbol())) {
-		return utility(b);
-	}
-	int v = INT_MIN;
-	char s = b.get_p1_symbol();
-	std::vector<OthelloBoard*> nextstates = next_moves(b, s);
-	for (int i = 0; i < nextstates.size(); i++) {
-		v = std::max(v, min_value(*nextstates[i]));
-	}
-	return v;
+char MinimaxPlayer::opponent(char symbol) {
+	char ops = (symbol == 'X') ? 'O' : 'X';
+	return ops;
 }
 
-int MinimaxPlayer::min_value(OthelloBoard b) {
-	if (!b.has_legal_moves_remaining(b.get_p2_symbol()) && b.has_legal_moves_remaining(b.get_p1_symbol())) {
-		return utility(b);
+Node* MinimaxPlayer::minimax_decision(OthelloBoard* b, char symbol, bool max) {
+	vector<State*> nextmoves = next_moves(b, symbol);
+	char op = opponent(symbol);
+
+	if (nextmoves.empty()) {
+		return new Node(NULL, utility(b));
 	}
-	int v = INT_MAX;
-	char s = b.get_p1_symbol();
-	std::vector<OthelloBoard*> nextstates = next_moves(b, s);
-	for (int i = 0; i < nextstates.size(); i++) {
-		v = std::min(v, max_value(*nextstates[i]));
+
+	if (max) { // max_value
+		Node* best = max_value(b, nextmoves, op);
+		return best;
 	}
-	return v;
+	else { // min_value
+		Node* best = min_value(b, nextmoves, op);
+		return best;
+	}
+}
+
+Node* MinimaxPlayer::max_value(OthelloBoard* b, vector<State*> nextmoves, char op) {
+	Node* best = new Node(NULL, INT_MIN);
+	for (vector<State*>::iterator i = nextmoves.begin(); i != nextmoves.end(); i++) {
+		Node* v = minimax_decision((*i)->board, op, false);
+
+		if (v->score > best->score) {
+			best = new Node((*i)->move, v->score);
+		}
+	}
+	return best;
+}
+
+Node* MinimaxPlayer::min_value(OthelloBoard* b, vector<State*> nextmoves, char op) {
+	Node* best = new Node(NULL, INT_MAX);
+	for (vector<State*>::iterator i = nextmoves.begin(); i != nextmoves.end(); i++) {
+		Node* v = minimax_decision((*i)->board, op, true);
+
+		if (v->score < best->score) {
+			best = new Node((*i)->move, v->score);
+		}
+	}
+	return best;
 }
 
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
-    // Given the state of a game, calculate the best move by searching forward all the way to the terminal states.
-	int best_row = -1, best_column = -1;
-	int best_min = INT_MAX;
-	int val;
-	std:vector<OthelloBoard*> possible_moves = next_moves(*b, get_symbol());
-	for (int i = 0; i < possible_moves.size(); i++) {
-		val = max_value(*possible_moves[i]);
-		if (val < best_min) {
-			best_min = val;
-			best_column = possible_moves[i]->get_col();
-			best_row = possible_moves[i]->get_row();
-		}
-	}
-	col = best_column;
-	row = best_row;
+    // Given the state of a game, calculate the best move by searching forward
+	// all the way to the terminal states.
+
+	// use minimax_decision
+	Node* choice = minimax_decision(b, symbol, true);
+
+	// assign rows and columns
+	col = choice->move->col;
+	row = choice->move->row;
 }
 
 MinimaxPlayer* MinimaxPlayer::clone() {
